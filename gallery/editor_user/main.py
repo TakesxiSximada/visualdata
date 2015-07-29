@@ -1,22 +1,23 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
+import time
+from numpy import cumprod, linspace, random
+from bokeh.plotting import figure, show, output_file
 
-from collections import OrderedDict
-from bokeh.charts import Area, show, output_file
+num_points = 300
+now = time.time()
+dt = 24 * 3600  # days in seconds
+dates = linspace(now, now + num_points*dt, num_points) * 1000  # times in ms
 
-# create some example data
-xyvalues = OrderedDict(
-    emacs=[500, 823, 774, 981, 913, 913, 934, 813, 956, 942, 923, 912, 934, 999],
-    vx=[12, 33, 47, 15, 12, 12, 14, 23, 25, 22, 226, 26, 11, 13],
-    atxx=[22, 43, 10, 25, 26, 101, 114, 203, 194, 215, 201, 227, 139, 160],
-    sublxxx=[22, 43, 10, 25, 26, 101, 114, 203, 194, 215, 201, 227, 139, 160],
-)
+acme = cumprod(random.lognormal(0.0, 0.02, size=600))
+choam = cumprod(random.lognormal(0.0, 0.04, size=600))
 
-output_file(filename="index.html")
+TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
 
-area = Area(
-    xyvalues, title="Editor",
-    stacked=True, legend="top_left"
-).legend("top_left")
+output_file("index.html", title="なんとなく自分の気分が良くなるグラフ")
+r = figure(x_axis_type="datetime", tools=TOOLS)
+r.line(dates, acme, color='#1F78B4', legend='Other')
+r.line(dates, choam, color='#FB9A99', legend='Emacs')
 
-show(area)
+r.title = "なんとなく自分の気分が良くなるグラフ"
+r.grid.grid_line_alpha = 0.3
+show(r)
